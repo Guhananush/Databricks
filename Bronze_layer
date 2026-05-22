@@ -31,3 +31,44 @@ def insights_gold():
         "day_of_week",
         F.date_format(F.col("signup_date_parsed"), "EEEE")
     )
+# Aggregate by day of week
+    day_of_week_stats = df.groupBy("day_of_week").agg(
+        F.count("*").alias("signup_count")
+    ).withColumn(
+        "percentage",
+        F.round((F.col("signup_count") / F.sum("signup_count").over(Window.partitionBy())) * 100, 2)
+    ).select(
+        F.lit("day_of_week").alias("dimension"),
+        F.col("day_of_week").alias("dimension_value"),
+        F.col("signup_count"),
+        F.col("percentage")
+    )
+    
+    # Aggregate by referral source
+    referral_stats = df.groupBy("referral_source").agg(
+        F.count("*").alias("signup_count")
+    ).withColumn(
+        "percentage",
+        F.round((F.col("signup_count") / F.sum("signup_count").over(Window.partitionBy())) * 100, 2)
+    ).select(
+        F.lit("referral_source").alias("dimension"),
+        F.col("referral_source").alias("dimension_value"),
+        F.col("signup_count"),
+        F.col("percentage")
+    )
+    
+    # Union both analyses
+    result = day_of_week_stats.union(referral_stats)
+    
+    return result
+
+
+@dp.materialized_view(
+    name="pipline_practice.section1.insights_gold",
+    comment="Copy of insights in pipline_practice schema"
+)
+def insights_gold_copy():
+    """
+    Additional copy of gold insights in the pipline_practice schema.
+    """
+    return spark.read.table("dataengineering.video1.insights_gold")
