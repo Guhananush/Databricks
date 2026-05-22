@@ -33,3 +33,15 @@ def users_silver():
     df = df.filter(F.col("row_num") == 1).drop("row_num")
     
     return df
+
+
+@dp.materialized_view(
+    name="pipline_practice.section1.user_cleand_csvfile",
+    comment="Cleaned user data saved to pipline_practice schema"
+)
+def users_silver_copy():
+    """
+    Additional copy of cleaned data in the pipline_practice schema.
+    This references the main silver table.
+    """
+    return spark.read.table("dataengineering.video1.user_cleand_csv")
