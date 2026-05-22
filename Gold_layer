@@ -63,3 +63,14 @@ def insights_gold():
     result = day_of_week_stats.union(referral_stats)
     
     return result
+
+dp.materialized_view(
+    name="pipline_practice.section1.insights_gold",
+    comment="Copy of insights in pipline_practice schema"
+)
+def insights_gold_copy():
+    """
+    Additional copy of gold insights in the pipline_practice schema.
+    """
+    return spark.read.table("dataengineering.video1.insights_gold")
+
