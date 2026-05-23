@@ -1,7 +1,7 @@
 # Databricks
 
 project/
-│                    
+                    
 ├── bronze/                                                                     
 ├── silver/                                        
 ├── gold/                                   
